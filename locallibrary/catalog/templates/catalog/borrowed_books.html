@@ -1,0 +1,25 @@
+{% extends "base_generic.html" %}
+
+
+{% block content %}
+  <h1>All Borrowed Books</h1>
+
+  {% if user.is_staff %}
+    <h2>All Borrowed Books (Staff View)</h2>
+  {% else %}
+    <h2>Your Borrowed Books</h2>
+  {% endif %}
+
+  {% if borrowed_books %}
+    <ul>
+      {% for book in borrowed_books %}
+        <li>
+          <a href="{% url 'book-detail' book.book.pk %}">{{ book.book.title }}</a>
+          (Due: {{ book.due_back }}) - Borrowed by: {{ book.borrower.username }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No books currently borrowed.</p>
+  {% endif %}
+{% endblock %}

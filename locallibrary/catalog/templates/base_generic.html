@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% block title %}
+      <title>Local Library</title>
+    {% endblock %}
+    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <!-- Bootstrap CSS -->
+    <link 
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
+      rel="stylesheet" 
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
+      crossorigin="anonymous"
+    />
+
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+  </head>
+  
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        
+        <!-- Sidebar -->
+        <nav class="col-sm-2 bg-light p-3">
+          {% block sidebar %}
+            <ul class="nav flex-column">
+              <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'books' %}">All Books</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'authors' %}">All Authors</a></li>
+
+              {% if user.is_authenticated %}
+                <li class="nav-item text-muted">User: {{ user.get_username }}</li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'my-borrowed' %}">My Borrowed Books</a></li>
+
+                {% if user.is_staff %}
+                  <hr>
+                  <li class="nav-item text-muted">Staff</li>
+                  <li class="nav-item"><a class="nav-link" href="{% url 'borrowed-books' %}">All Borrowed</a></li>
+                {% endif %}
+
+                <li class="nav-item mt-2">
+                  <form id="logout-form" method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm w-100">Logout</button>
+                  </form>
+                </li>
+              {% else %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">Login</a>
+                </li>
+              {% endif %}
+            </ul>
+          {% endblock %}
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-sm-10 p-4">
+          {% block content %}{% endblock %}
+
+          <!-- Pagination -->
+          {% block pagination %}
+            {% if is_paginated %}
+              <div class="d-flex justify-content-center mt-4">
+                <nav>
+                  <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                      <li class="page-item">
+                        <a class="page-link" href="{{ request.path }}?page={{ page_obj.previous_page_number }}">Previous</a>
+                      </li>
+                    {% endif %}
+                    <li class="page-item disabled">
+                      <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+                    {% if page_obj.has_next %}
+                      <li class="page-item">
+                        <a class="page-link" href="{{ request.path }}?page={{ page_obj.next_page_number }}">Next</a>
+                      </li>
+                    {% endif %}
+                  </ul>
+                </nav>
+              </div>
+            {% endif %}
+          {% endblock %}
+        </main>
+
+      </div>
+    </div>
+  </body>
+</html>

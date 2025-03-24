@@ -1,0 +1,29 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>{{ author.first_name }} {{ author.last_name }}</h1>
+  <p><strong>Date of Birth:</strong> {{ author.date_of_birth }}</p>
+  <p><strong>Date of Death:</strong> 
+    {% if author.date_of_death %}
+      {{ author.date_of_death }}
+    {% else %}
+      Present
+    {% endif %}
+  </p>
+
+  <h2>Books by this Author</h2>
+  {% if author.book_set.all %}
+    <ul>
+      {% for book in author.book_set.all %}
+        <li>
+          <a href="{% url 'book-detail' book.id %}">{{ book.title }}</a> 
+          ({{ book.genre.all|join:", " }})
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No books available for this author.</p>
+  {% endif %}
+
+  <p><a href="{% url 'authors' %}">Back to Author List</a></p>
+{% endblock %}
